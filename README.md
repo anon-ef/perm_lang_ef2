@@ -175,10 +175,12 @@ Separation of a permission environment from a memory map is defined by `sep_nres
 
 The `well_typed_sys` definition given in the paper is defined as `well_typed_system` in `ProcDef.thy`. Note that the requirements that the memory value and process bodies be proper were already included in `well_typed_state` and `well_typed_pset`, and the requirement that all permission environments be contained within the memory `M` is given by `sub_nres_map`, defined in `ResMapDisj.thy`.
 
-## 4. Results
+# 4. Results
 
+## 4.1 Race Freedom
 The proof of Theorem 1 (Race Freedom) is given by `excl_safe_lemma` in `ExclLemma.thy`. This proof is relatively simple in concept, although it does make use of several additional auxiliary definitions. It is suggested that the proof of Theorem 2 is examined before looking at the proof of Theorem 1.
 
+## 4.2 Type Preservation
 The bulk of our theory is the proof of Theorem 2 (Type Preservation) is given by `safe_red_all` in `Master.thy`. This theorem makes use of two major lemmas.
 
 The first is `sares_valid` in `SafeRedAppLemma.thy`, the proof of `sares_valid` is based on `safe_app_red_exp_strict`, a proof that reductions on expressions not involving holes preserves well-typedness (with respect to several inductive constraints). Two of its cases, proven in lemmas `sares_lam_case` and `sares_fix_case` make substantial use of the lemma `safe_subst_type_preserve_x` defined in `SafeSubTPX.thy`, which asserts that substitution (defined with variables renamed to prevent lambda capture) preserves well-typedness.
@@ -186,6 +188,13 @@ The first is `sares_valid` in `SafeRedAppLemma.thy`, the proof of `sares_valid` 
 The main inductive hypothesis is defined for `safe_subst_type_preserve_x` is given by `subst_type_preserve_x` defined in `SubstTPX.thy`.
 
 The second major lemma is `safe_red_proc_set` in `ProcLemma.thy`, which proves that process reduction is well-typed under the assumption proved by `sares_valid`.
+
+## 4.3 Type Inference
+Permission terms are defined by `s_perm` in `InferVar.thy`. Permission expressions are defined by `x_perm` and extended types are defined by `s_type` also in `InferVar.thy`. Constraints `kappa` are given by `perm_crn` in `InferDef.thy`. Semi-disjointness is defined by `mini_disj_use_env` in `PermEnv.thy`.
+
+Two types of type substitutions are defined in `InferVar.thy`, `type_subst` returns types extended with type variables, `dir_type_subst` assumes types returned by substitution do not have type variables. Solvability is defined for `dir_type_subst`, however `type_subst` is used in other places as appropriate. Permission substitutions are defined by `perm_subst` in `InferVar.thy`.
+
+The solvability of a set of constraints is given by `dir_sol_sat` in `InferDef.thy`. Our type inference algorithm is defined by `infer_type` in `InferDef.thy`. The const_scheme function is given together by `const_scheme` and `op_scheme` in `InferDef.thy`.
 
 The proof of Theorem 3 (Inferencing Soundness) is given by `infer_valid_left` in `InferSound.thy`. The proof of Theorem 4 (Inferencing Completeness) is given by `infer_valid_right` in `InferComplete.thy`.
 
